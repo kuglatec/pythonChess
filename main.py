@@ -81,7 +81,7 @@ init_pieces = {
     
 }
 
-
+INIT_PIECES = init_pieces
 
 board = ['11', '12', '13', '14', '15', '16', '17', '18',
          '21', '22', '23', '24', '25', '26', '27', '28',
@@ -94,8 +94,7 @@ board = ['11', '12', '13', '14', '15', '16', '17', '18',
 
 
 
-def move_queen(position, destination):
-    pieces = init_pieces
+def move_queen(position, destination, pieces):
     direction = 10
     way=[]
     x_pos = str(position[0])
@@ -243,10 +242,13 @@ def move_queen(position, destination):
     num_of_own_pieces = get_num_of_own_pieces()
     score = get_score(num_of_own_pieces['pawn_counter'], num_of_own_pieces['knight_counter'], num_of_own_pieces['bishop_counter'], num_of_own_pieces['rook_counter'], num_of_own_pieces['queen_counter'], num_of_own_pieces['king_counter'], num_of_own_pieces['op_pawn_counter'], num_of_own_pieces['op_knight_counter'], num_of_own_pieces['op_bishop_counter'], num_of_own_pieces['op_rook_counter'], num_of_own_pieces['op_queen_counter'], num_of_own_pieces['op_king_counter'])
     pieces[moving_piece]['position'] = position
+    #pieces[piece_in_way]['alive'] = True
+    if in_way == True:
+        pieces[piece_in_way]['alive'] = True
     return {'valid': True, 'score': score}
 
     #return num_of_own_pieces
-def move_bishop(position, destination):
+def move_bishop(position, destination, init_pieces):
     pieces = init_pieces
     way=[]
     x_pos = str(position[0])
@@ -395,8 +397,10 @@ def move_bishop(position, destination):
         pieces[moving_piece]['position'] = destination
 
     num_of_own_pieces = get_num_of_own_pieces()
-    pieces = {}
-    return {'valid': True, 'score': get_score(num_of_own_pieces['pawn_counter'], num_of_own_pieces['knight_counter'], num_of_own_pieces['bishop_counter'], num_of_own_pieces['rook_counter'], num_of_own_pieces['queen_counter'], num_of_own_pieces['king_counter'], num_of_own_pieces['op_pawn_counter'], num_of_own_pieces['op_knight_counter'], num_of_own_pieces['op_bishop_counter'], num_of_own_pieces['op_rook_counter'], num_of_own_pieces['op_queen_counter'], num_of_own_pieces['op_king_counter'])}
+    score = get_score(num_of_own_pieces['pawn_counter'], num_of_own_pieces['knight_counter'], num_of_own_pieces['bishop_counter'], num_of_own_pieces['rook_counter'], num_of_own_pieces['queen_counter'], num_of_own_pieces['king_counter'], num_of_own_pieces['op_pawn_counter'], num_of_own_pieces['op_knight_counter'], num_of_own_pieces['op_bishop_counter'], num_of_own_pieces['op_rook_counter'], num_of_own_pieces['op_queen_counter'], num_of_own_pieces['op_king_counter'])
+    if in_way == True:
+        pieces[piece_in_way]['alive'] = True
+    return {'valid': True, 'score': score}
     
     
 def move_rook(position, destination):
@@ -571,25 +575,46 @@ def get_num_of_own_pieces():
              'op_bishop_counter': op_bishop_counter, 
              'op_rook_counter': op_rook_counter, 
              'op_queen_counter': op_queen_counter, 
-             'op_king_counter': king_counter}
-queens = []
-def find_best_move():
+             'op_king_counter': op_king_counter}
+
+def get_valid_moves():
+    queens = []
+    rooks = []
+    bishops = []
     valid_moves = []
     for piece in init_pieces:
-        if init_pieces[piece]['kind'] == 'queen' and init_pieces[piece]['owner'] == 0:
+        if init_pieces[piece]['kind'] == 'queen' and init_pieces[piece]['owner'] == 0 and init_pieces[piece]['alive'] == True:
             queens.append(piece)
     
     for i in queens:
         var = init_pieces[i]['position']
         for b in board:
-            move = move_queen(str(var), str(b))
+            move = move_queen(str(var), str(b), init_pieces)
             if move['valid'] == True:
                 valid_moves.append({'move': [str(var), str(b)],
                                     'score': move['score'],                 
                                     })
 
-    print(valid_moves)
-            
-find_best_move()
+    for piece in init_pieces:
+        if init_pieces[piece]['kind'] == 'bishop' and init_pieces[piece]['owner'] == 0:
+            bishops.append(piece)
+    
+    for i in bishops:
+        var = init_pieces[i]['position']
+        for b in board:
+            move = move_bishop(str(var), str(b), init_pieces)
+            if move['valid'] == True:
+                valid_moves.append({'move': [str(var), str(b)],
+                                    'score': move['score'],                 
+                                    })
 
-#find_best_move()
+    return valid_moves           
+
+valids = get_valid_moves()
+
+def get_best_move(valids):
+    moves_sorted = sorted(valids, key=lambda d: d['score'],  reverse=True)
+    return moves_sorted[0]
+print(get_best_move(valids))
+#print(valids)
+
