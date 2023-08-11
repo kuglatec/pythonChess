@@ -1,3 +1,4 @@
+import numpy as np
 class values():
     pawn = 1
     knight = 3
@@ -26,7 +27,7 @@ init_pieces = {
         'value': values.rook, #assigns the value
         'owner': 1, #Defines, that this piece does not belong to the bot
         'kind': 'rook', # defines the type of the piece. This is later relevant to call the matching move function
-        'position': '22',# initial position of the piece
+        'position': '88',# initial position of the piece
         'alive': True, # tells if the piece is still in game or has been captured
     },
     'rook4': {
@@ -251,6 +252,7 @@ def move_queen(position, destination, pieces):
 def move_bishop(position, destination, init_pieces):
     pieces = init_pieces
     way=[]
+    direction = 10
     x_pos = str(position[0])
     y_pos = str(position[1])
     x_dest = str(destination[0])
@@ -269,39 +271,28 @@ def move_bishop(position, destination, init_pieces):
         pieces = {}
         return {'valid': False, 'error': 'This move is invalid since there is no piece at ' + position}
 
-    if y_pos == y_dest and x_pos == x_dest:
-        pieces = {}
+    if str(position) == str(destination):
         return {'valid': False, 'error': 'You have to move a piece'}
     
     
-    if x_dest > x_pos and y_dest > y_pos and x_dest - x_pos == y_dest - y_pos:
+    if x_dest > x_pos and y_dest > y_pos and np.abs(x_dest - x_pos) == np.abs(y_dest - y_pos):
         direction = 0
 
 
-    elif x_dest < x_pos and y_dest < y_pos and x_dest - x_pos == y_dest - y_pos:
+    elif x_dest < x_pos and y_dest < y_pos and np.abs(x_dest - x_pos) == np.abs(y_dest - y_pos):
         ###print('2')
         direction = 1
 
-    elif x_dest < x_pos and y_dest > y_pos and x_dest - x_pos == y_dest - y_pos:
+    elif x_dest < x_pos and y_dest > y_pos and np.abs(x_dest - x_pos) == np.abs(y_dest - y_pos):
         ###print('2')
         direction = 2
 
-    elif x_dest > x_pos and y_dest < y_pos and x_dest - x_pos == y_dest - y_pos:
+    elif x_dest > x_pos and y_dest < y_pos and np.abs(x_dest - x_pos) == np.abs(y_dest - y_pos):
         ###print('3')
         direction = 3
 
-
-    elif y_pos == y_dest:
-        direction = 4
-    
-    elif x_pos == x_dest:
-        direction= 5
-
-
-    else:
-        pieces = {}
-        return {'valid': False, 'error': 'Invalid move! The bishop cant move like that'}
-    
+    elif direction == 10:
+        return {'valid': False, 'error': 'The bishop cant move like that'}
 
     if direction == 0:
         x_field = x_pos
@@ -397,9 +388,11 @@ def move_bishop(position, destination, init_pieces):
         pieces[moving_piece]['position'] = destination
 
     num_of_own_pieces = get_num_of_own_pieces()
+    pieces[moving_piece]['position'] = position
     score = get_score(num_of_own_pieces['pawn_counter'], num_of_own_pieces['knight_counter'], num_of_own_pieces['bishop_counter'], num_of_own_pieces['rook_counter'], num_of_own_pieces['queen_counter'], num_of_own_pieces['king_counter'], num_of_own_pieces['op_pawn_counter'], num_of_own_pieces['op_knight_counter'], num_of_own_pieces['op_bishop_counter'], num_of_own_pieces['op_rook_counter'], num_of_own_pieces['op_queen_counter'], num_of_own_pieces['op_king_counter'])
     if in_way == True:
         pieces[piece_in_way]['alive'] = True
+
     return {'valid': True, 'score': score}
     
     
@@ -594,7 +587,6 @@ def get_valid_moves():
                 valid_moves.append({'move': [str(var), str(b)],
                                     'score': move['score'],                 
                                     })
-
     for piece in init_pieces:
         if init_pieces[piece]['kind'] == 'bishop' and init_pieces[piece]['owner'] == 0:
             bishops.append(piece)
@@ -615,6 +607,8 @@ valids = get_valid_moves()
 def get_best_move(valids):
     moves_sorted = sorted(valids, key=lambda d: d['score'],  reverse=True)
     return moves_sorted[0]
-print(get_best_move(valids))
-#print(valids)
 
+
+print(sorted(valids, key=lambda d: d['score'],  reverse=True))
+print('---')
+print(move_queen('41', '48', init_pieces))
