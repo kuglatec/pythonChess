@@ -94,7 +94,35 @@ init_pieces = {
         'position': '58',
         'alive': True,
 
-    }
+    },
+    'knight1': {
+        'value': values.knight,
+        'owner': 0,
+        'kind': 'king',
+        'position': '21',
+        'alive': True,
+    },
+    'knight2': {
+        'value': values.knight,
+        'owner': 0,
+        'kind': 'king',
+        'position': '71',
+        'alive': True,
+    },
+    'knight3': {
+        'value': values.knight,
+        'owner': 1,
+        'kind': 'king',
+        'position': '28',
+        'alive': True,
+    },
+    'knight4': {
+        'value': values.knight,
+        'owner': 1,
+        'kind': 'king',
+        'position': '78',
+        'alive': True,
+    },
     
 }
 
@@ -110,6 +138,97 @@ board = ['11', '12', '13', '14', '15', '16', '17', '18',
          '61', '62', '63', '64', '65', '66', '67', '68',
          '71', '72', '73', '74', '75', '76', '77', '78',
          '81', '82', '83', '84', '85', '86', '87', '88']
+
+
+def move_knight(position, destination, pieces):
+    direction = []
+    x_pos = str(position[0])
+    y_pos = str(position[1])
+    x_dest = str(destination[0])
+    y_dest = str(destination[1])
+    x_pos = int(x_pos)
+    y_pos = int(y_pos)
+    x_dest = int(x_dest)
+    y_dest = int(y_dest)
+    for piece in pieces:
+        moving_piece = ''
+        if position == pieces[piece]['position']:
+            moving_piece = piece
+            break
+
+    if y_pos - y_dest == -2 and x_pos - x_dest == 1:
+        direction = 1
+
+    elif y_pos - y_dest == -2 and x_pos - x_dest == -1:
+        direction = 2
+
+    elif y_pos - y_dest == 2 and x_pos - x_dest == 1:
+        direction = 3
+    
+    elif y_pos - y_dest == 2 and x_pos - x_dest == -1:
+        direction = 4
+
+    elif y_pos - y_dest == -1 and x_pos - x_dest == 2:
+        direction = 5
+    
+    elif y_pos - y_dest == -1 and x_pos - x_dest == -1:
+        direction = 6
+    
+    elif y_pos - y_dest == 1 and x_pos - x_dest == 2:
+        direction = 7
+
+    elif y_pos - y_dest == 1 and x_pos -x_dest == -1:
+        direction = 8
+    
+    else:
+        return {'valid': False, 'error': 'the knight cant move like that'}
+    
+    piece_in_way = ''
+    in_way = False
+    for piece in pieces:
+        if pieces[piece]['position'] == destination:
+            if pieces[piece_in_way]['owner'] == 0:
+                return {'valid': False, 'error': 'Own piece is blocking the way'}
+            piece_in_way = piece
+            in_way = True
+            pieces[piece_in_way]['alive'] = False
+            break
+
+    pieces[moving_piece]['position'] = destination
+
+    num_of_own_pieces = get_num_of_own_pieces()
+    score = get_score(num_of_own_pieces['pawn_counter'], num_of_own_pieces['knight_counter'], num_of_own_pieces['bishop_counter'], num_of_own_pieces['rook_counter'], num_of_own_pieces['queen_counter'], num_of_own_pieces['king_counter'], num_of_own_pieces['op_pawn_counter'], num_of_own_pieces['op_knight_counter'], num_of_own_pieces['op_bishop_counter'], num_of_own_pieces['op_rook_counter'], num_of_own_pieces['op_queen_counter'], num_of_own_pieces['op_king_counter'])
+    pieces[moving_piece]['position'] = position
+    #pieces[piece_in_way]['alive'] = True
+    if in_way == True:
+        pieces[piece_in_way]['alive'] = True
+    return {'valid': True, 'score': score}
+    
+
+       
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -704,9 +823,9 @@ def get_best_move(valids):
     moves_sorted = sorted(valids, key=lambda d: d['score'],  reverse=True)
     return moves_sorted[0]
 
-print('++++++')
 #print(get_best_move(valids))
 print('++++++++++++++++++++++++++++++++++++++++++++++')
+print(move_knight('21', '33', init_pieces))
 #for i in sorted(valids, key=lambda d: d['score'],  reverse=True):
 #    print(i)
 #    print('---------------------')
