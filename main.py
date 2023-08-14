@@ -123,6 +123,14 @@ init_pieces = {
         'position': '78',
         'alive': True,
     },
+    'pawn1': {
+        'value': values.pawn,
+        'owner': 0,
+        'kind': 'pawn',
+        'position': '12',
+        'alive': True,
+        'moved': False,
+    },
     
 }
 
@@ -138,6 +146,83 @@ board = ['11', '12', '13', '14', '15', '16', '17', '18',
          '61', '62', '63', '64', '65', '66', '67', '68',
          '71', '72', '73', '74', '75', '76', '77', '78',
          '81', '82', '83', '84', '85', '86', '87', '88']
+
+
+
+def move_pawn(position, destination, pieces):
+    x_pos = str(position[0])
+    y_pos = str(position[1])
+    x_dest = str(destination[0])
+    y_dest = str(destination[1])
+    x_pos = int(x_pos)
+    y_pos = int(y_pos)
+    x_dest = int(x_dest)
+    y_dest = int(y_dest)
+    for piece in pieces:
+        moving_piece = ''
+        if position == pieces[piece]['position']:
+            moving_piece = piece
+            break
+    
+    piece_in_way = ''
+    in_way = False
+    for piece in pieces:
+        if pieces[piece]['position'] == destination:
+            piece_in_way = piece
+            if pieces[piece_in_way]['owner'] == 0:
+                return {'valid': False, 'error': 'Own piece is blocking the way'}
+            in_way = True
+            pieces[piece_in_way]['alive'] = False
+            break
+
+
+    if moving_piece == '':
+        return {'valid': False, 'error': 'There is no piece'}
+    
+    direction = 0
+
+    if y_dest == y_pos + 1:
+        direction = 1
+
+    if y_dest == y_pos + 2:
+        if pieces[moving_piece]['moved'] == True:
+            return {'valid': False, 'error': 'pawn already moved'}
+        
+        else:
+            direction = 2
+    
+    if x_dest == x_pos - 1 and y_dest == y_pos + 1:
+        if in_way == False:
+            return {'valid': False, 'error': 'No piece to take'}
+        
+        else:
+            direction = 3
+
+    if x_dest == x_pos + 1 and y_dest == y_pos + 1:
+        if in_way == False:
+            return {'valid': False, 'error': 'No piece to take'}
+        
+        else:
+            direction = 4
+
+    if direction == 0:
+        return {'valid': False, 'error': 'pawn cant move like that'}
+
+    if direction == 1 or 2:
+        pieces[moving_piece]['position'] = destination
+
+    if in_way == True:
+        if direction == 3 or 4:
+            pieces[moving_piece]['position'] = destination
+            pieces[piece_in_way]['alive'] = False
+
+    num_of_own_pieces = get_num_of_own_pieces()
+    score = get_score(num_of_own_pieces['pawn_counter'], num_of_own_pieces['knight_counter'], num_of_own_pieces['bishop_counter'], num_of_own_pieces['rook_counter'], num_of_own_pieces['queen_counter'], num_of_own_pieces['king_counter'], num_of_own_pieces['op_pawn_counter'], num_of_own_pieces['op_knight_counter'], num_of_own_pieces['op_bishop_counter'], num_of_own_pieces['op_rook_counter'], num_of_own_pieces['op_queen_counter'], num_of_own_pieces['op_king_counter'])
+    pieces[moving_piece]['position'] = position
+    #pieces[piece_in_way]['alive'] = True
+    if in_way == True:
+        pieces[piece_in_way]['alive'] = True
+    return {'valid': True, 'score': score}
 
 
 def move_knight(position, destination, pieces):
@@ -187,9 +272,9 @@ def move_knight(position, destination, pieces):
     in_way = False
     for piece in pieces:
         if pieces[piece]['position'] == destination:
+            piece_in_way = piece
             if pieces[piece_in_way]['owner'] == 0:
                 return {'valid': False, 'error': 'Own piece is blocking the way'}
-            piece_in_way = piece
             in_way = True
             pieces[piece_in_way]['alive'] = False
             break
@@ -765,6 +850,7 @@ def get_valid_moves():
     bishops = []
     kings = []
     valid_moves = []
+    knights = []
     for piece in init_pieces:
         if init_pieces[piece]['kind'] == 'queen' and init_pieces[piece]['owner'] == 0 and init_pieces[piece]['alive'] == True:
             queens.append(piece)
@@ -814,8 +900,23 @@ def get_valid_moves():
                                     'score': move['score'],                 
                                     })
 
+    for piece in init_pieces:
+        if init_pieces[piece]['kind'] == 'knight' and init_pieces[piece]['owner'] == 0 and init_pieces[piece]['alive'] == True:
+            knights.append(piece)
+    for i in knights:
+        var = init_pieces[i]['position']
+        for b in board:
+            move = move_knight(str(var), str(b), init_pieces)
+            if move['valid'] == True:
+                valid_moves.append({'move': [str(var), str(b)],
+                                    'score': move['score'],                 
+                                    })
 
     return valid_moves           
+
+
+
+print(move_pawn('12', '14', init_pieces))
 
 #valids = get_valid_moves()
 
@@ -823,9 +924,11 @@ def get_best_move(valids):
     moves_sorted = sorted(valids, key=lambda d: d['score'],  reverse=True)
     return moves_sorted[0]
 
+
+
 #print(get_best_move(valids))
-print('++++++++++++++++++++++++++++++++++++++++++++++')
-print(move_knight('21', '33', init_pieces))
+#print('++++++++++++++++++++++++++++++++++++++++++++++')
+#print(move_knight('21', '33', init_pieces))
 #for i in sorted(valids, key=lambda d: d['score'],  reverse=True):
 #    print(i)
 #    print('---------------------')
