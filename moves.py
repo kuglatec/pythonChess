@@ -2,6 +2,7 @@ import numpy as np
 from score_eval import get_num_of_own_pieces, get_score
 from copy import deepcopy
 def move_bishop(position, destination, pieces):
+    pieces = deepcopy(pieces)
     way=[]
     direction = 10
     x_pos = int(position[0])
@@ -142,9 +143,9 @@ def move_bishop(position, destination, pieces):
     num_of_own_pieces = get_num_of_own_pieces(pieces)
     ret = deepcopy(pieces)
     score = get_score(num_of_own_pieces['pawn_counter'], num_of_own_pieces['knight_counter'], num_of_own_pieces['bishop_counter'], num_of_own_pieces['rook_counter'], num_of_own_pieces['queen_counter'], num_of_own_pieces['king_counter'], num_of_own_pieces['op_pawn_counter'], num_of_own_pieces['op_knight_counter'], num_of_own_pieces['op_bishop_counter'], num_of_own_pieces['op_rook_counter'], num_of_own_pieces['op_queen_counter'], num_of_own_pieces['op_king_counter'])
-    pieces[moving_piece]['position'] = position
-    if in_way == True:
-        pieces[piece_in_way]['alive'] = True
+    #
+ #   if in_way == True:
+  #      pieces[piece_in_way]['alive'] = True
 
     return {'valid': True, 'score': score, 'ret': ret}
 
@@ -154,6 +155,7 @@ def move_king(position, destination, pieces):
     y_pos = int(position[1])
     x_dest = int(destination[0])
     y_dest = int(destination[1])
+    pieces = deepcopy(pieces)
     for piece in pieces:
         moving_piece = ''
         if position == pieces[piece]['position']:
@@ -191,7 +193,7 @@ def move_king(position, destination, pieces):
     
     score = get_score(num_of_own_pieces['pawn_counter'], num_of_own_pieces['knight_counter'], num_of_own_pieces['bishop_counter'], num_of_own_pieces['rook_counter'], num_of_own_pieces['queen_counter'], num_of_own_pieces['king_counter'], num_of_own_pieces['op_pawn_counter'], num_of_own_pieces['op_knight_counter'], num_of_own_pieces['op_bishop_counter'], num_of_own_pieces['op_rook_counter'], num_of_own_pieces['op_queen_counter'], num_of_own_pieces['op_king_counter'])
     ret = deepcopy(pieces)
-    pieces[moving_piece]['position'] = position
+    #
     #pieces[piece_in_way]['alive'] = True
     if in_way == True:
         pieces[piece_in_way]['alive'] = True
@@ -203,6 +205,7 @@ def move_knight(position, destination, pieces):
     y_pos = int(position[1])
     x_dest = int(destination[0])
     y_dest = int(destination[1])
+    pieces = deepcopy(pieces)
     for piece in pieces:
         moving_piece = ''
         if position == pieces[piece]['position']:
@@ -253,7 +256,7 @@ def move_knight(position, destination, pieces):
     
     score = get_score(num_of_own_pieces['pawn_counter'], num_of_own_pieces['knight_counter'], num_of_own_pieces['bishop_counter'], num_of_own_pieces['rook_counter'], num_of_own_pieces['queen_counter'], num_of_own_pieces['king_counter'], num_of_own_pieces['op_pawn_counter'], num_of_own_pieces['op_knight_counter'], num_of_own_pieces['op_bishop_counter'], num_of_own_pieces['op_rook_counter'], num_of_own_pieces['op_queen_counter'], num_of_own_pieces['op_king_counter'])
     ret = deepcopy(pieces)
-    pieces[moving_piece]['position'] = position
+    
     #pieces[piece_in_way]['alive'] = True
     if in_way == True:
         pieces[piece_in_way]['alive'] = True
@@ -265,6 +268,7 @@ def move_pawn(position, destination, pieces):
     y_pos = int(position[1])
     x_dest = int(destination[0])
     y_dest = int(destination[1])
+    pieces = deepcopy(pieces)
     for piece in pieces:
         moving_piece = ''
         if position == pieces[piece]['position']:
@@ -326,15 +330,16 @@ def move_pawn(position, destination, pieces):
     score = get_score(num_of_own_pieces['pawn_counter'], num_of_own_pieces['knight_counter'], num_of_own_pieces['bishop_counter'], num_of_own_pieces['rook_counter'], num_of_own_pieces['queen_counter'], num_of_own_pieces['king_counter'], num_of_own_pieces['op_pawn_counter'], num_of_own_pieces['op_knight_counter'], num_of_own_pieces['op_bishop_counter'], num_of_own_pieces['op_rook_counter'], num_of_own_pieces['op_queen_counter'], num_of_own_pieces['op_king_counter'])
 
     ret = deepcopy(pieces)
-    pieces[moving_piece]['position'] = position
+    #
     #pieces[piece_in_way]['alive'] = True
-    if in_way == True:
-        pieces[piece_in_way]['alive'] = True
+    #if in_way == True:
+    #    pieces[piece_in_way]['alive'] = True
     return {'valid': True, 'score': score, 'ret': ret}
 
 def move_queen(position, destination, pieces):
     direction = 10
     way=[]
+    pieces = deepcopy(pieces)
     x_pos = int(position[0])
     y_pos = int(position[1])
     x_dest = int(destination[0])
@@ -483,9 +488,9 @@ def move_queen(position, destination, pieces):
     num_of_own_pieces = get_num_of_own_pieces(pieces)
     score = get_score(num_of_own_pieces['pawn_counter'], num_of_own_pieces['knight_counter'], num_of_own_pieces['bishop_counter'], num_of_own_pieces['rook_counter'], num_of_own_pieces['queen_counter'], num_of_own_pieces['king_counter'], num_of_own_pieces['op_pawn_counter'], num_of_own_pieces['op_knight_counter'], num_of_own_pieces['op_bishop_counter'], num_of_own_pieces['op_rook_counter'], num_of_own_pieces['op_queen_counter'], num_of_own_pieces['op_king_counter'])
     ret = deepcopy(pieces)
-    pieces[moving_piece]['position'] = position
-    if in_way == True:
-        pieces[piece_in_way]['alive'] = True
+    #
+ #   if in_way == True:
+  #      pieces[piece_in_way]['alive'] = True
     return {'valid': True, 'score': score, 'ret': ret}
 
 
@@ -495,7 +500,7 @@ def move_rook(position, destination, pieces):
     y_pos = int(position[1])
     x_dest = int(destination[0])
     y_dest = int(destination[1])
-    
+    pieces = deepcopy(pieces)
     moving_piece = ''    
     for piece in pieces:
         if pieces[piece]['position'] == position:
@@ -567,8 +572,5 @@ def move_rook(position, destination, pieces):
     num_of_own_pieces = get_num_of_own_pieces(pieces)
     score = get_score(num_of_own_pieces['pawn_counter'], num_of_own_pieces['knight_counter'], num_of_own_pieces['bishop_counter'], num_of_own_pieces['rook_counter'], num_of_own_pieces['queen_counter'], num_of_own_pieces['king_counter'], num_of_own_pieces['op_pawn_counter'], num_of_own_pieces['op_knight_counter'], num_of_own_pieces['op_bishop_counter'], num_of_own_pieces['op_rook_counter'], num_of_own_pieces['op_queen_counter'], num_of_own_pieces['op_king_counter'])
     ret = deepcopy(pieces)
-    pieces[moving_piece]['position'] = position
     #pieces[piece_in_way]['alive'] = True
-    if in_way == True:
-        pieces[piece_in_way]['alive'] = True
     return {'valid': True, 'score': score, 'ret': ret}
